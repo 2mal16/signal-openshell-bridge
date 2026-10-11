@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(try_from = "String", into = "String")]
@@ -28,8 +28,13 @@ impl From<PhoneNumber> for String {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
-    pub bind_ip: IpAddr,
+    pub signal_cli: SocketAddr,
     pub gateway: SocketAddr,
-    pub listen: SocketAddr,
     pub allowed_phones: Vec<PhoneNumber>,
+}
+
+impl Config {
+    pub fn events_url(&self) -> String {
+        format!("http://{}/api/v1/events", self.signal_cli)
+    }
 }
