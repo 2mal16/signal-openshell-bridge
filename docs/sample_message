@@ -1,0 +1,3 @@
+id:
+event:receive
+data:{"envelope":{"source":"","sourceNumber":"","sourceUuid":"","sourceName":"","sourceDevice":1,"timestamp":int,"serverReceivedTimestamp":int,"serverDeliveredTimestamp":int,"typingMessage":{"action":"STARTED","timestamp":int}},"account":""}
