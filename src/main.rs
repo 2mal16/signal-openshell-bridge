@@ -1,4 +1,5 @@
 mod config;
+mod message;
 mod signal;
 
 use config::Config;
