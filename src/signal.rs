@@ -28,17 +28,22 @@ pub async fn listen(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
                 continue;
             }
         };
-        if let Some(message) = process_event(event, config) {
-            match dispatch(&client, config.gateway, &message).await {
-                Ok((response)) => {
-                    println!("Message {} dispatched successfully, response {}", message.id, response.expect("REASON").status());
+        match process_event(event, config) {
+            Ok(message) => match dispatch(&client, config.gateway, &message).await {
+                Ok(response) => {
+                    println!(
+                        "Message {} dispatched  {} successfully",
+                        message.id, response
+                    );
                 }
                 Err(error) => {
-                    eprintln!("Dispatch failed: {error}");
+                    eprintln!("Dispatch failed: {}", error);
                 }
+            },
+            Err(error) => {
+                eprintln!("Processing event failed: {}", error);
             }
         }
     }
-
     Ok(())
 }

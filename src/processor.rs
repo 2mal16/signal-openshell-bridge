@@ -32,18 +32,18 @@ pub fn authorize_event(event: SignalEvent, config: &Config) -> Result<Authorized
     })
 }
 
-pub fn process_event(event: SignalEvent, config: &Config) -> Option<AuthorizedMessage> {
+pub fn process_event(event: SignalEvent, config: &Config) -> Result<AuthorizedMessage, Error> {
     match authorize_event(event, config) {
         Ok(message) => {
             println!(
                 "Authorized message received {} from {}",
                 message.message, message.sender
             );
-            None
+            Ok(message)
         }
         Err(error) => {
             println!("Message was not authorized with error {}", error);
-            None
+            Err(error)
         }
     }
 }
