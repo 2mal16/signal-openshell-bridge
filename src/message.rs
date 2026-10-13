@@ -1,6 +1,5 @@
 use crate::config::PhoneNumber;
-use serde::Deserialize;
-use serde_json::Number;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Deserialize)]
@@ -11,16 +10,18 @@ pub enum TypingAction {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct TypingMessage {
-    action: TypingAction,
+    pub action: TypingAction,
     pub timestamp: i64,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct DataMessage {
     timestamp: i64,
-    message: String,
+    pub message: String,
     expires_in_seconds: i8,
     view_once: bool,
     is_end_session: bool,
@@ -29,37 +30,30 @@ pub struct DataMessage {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct Envelope {
     source: PhoneNumber,
-    source_number: PhoneNumber,
+    pub source_number: PhoneNumber,
     source_uuid: Uuid,
-    source_name: String,
-    source_device: Number,
-    timestamp: i64,
+    pub source_name: String,
+    source_device: u16,
+    pub timestamp: i64,
     server_received_timestamp: i64,
     server_delivered_timestamp: i64,
-    typing_message: Option<TypingMessage>,
-    data_message: Option<DataMessage>,
+    pub typing_message: Option<TypingMessage>,
+    pub data_message: Option<DataMessage>,
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct SignalEvent {
-    envelope: Envelope,
-    account: PhoneNumber,
+    pub envelope: Envelope,
+    pub account: PhoneNumber,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct ReceivedEvent {
-    pub sse_id: String,
-    pub message: SignalEvent,
-}
-
-pub struct Message {
-    id: u16,
-    message: String,
-}
-
-pub struct AllowedMessage {
-    id: u16,
-    message: String,
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AuthorizedMessage {
+    pub id: i64,
+    pub sender: String,
+    pub message: String,
 }

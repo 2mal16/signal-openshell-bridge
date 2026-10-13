@@ -1,3 +1,5 @@
 gateway = "192.168.60.114:8100"
 signal_cli = "127.0.0.1:8080"
 allowed_phones=["+41766908949"]
+allowed_accounts=["+4916092011548"]
+allowed_source_names=["salamanca"]

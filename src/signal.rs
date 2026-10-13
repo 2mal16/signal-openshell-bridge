@@ -1,17 +1,16 @@
+use crate::config::Config;
+use crate::dispatcher::dispatch;
 use crate::message::SignalEvent;
+use crate::processor::process_event;
+
 use eventsource_stream::Eventsource;
 use futures_util::StreamExt;
 use reqwest;
-use tracing_subscriber::reload::Error;
 
-pub fn process_event(event: SignalEvent) -> Result<(), Error> {
-    println!("{event:#?}");
-    Ok(())
-}
-
-pub async fn listen(events_url: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn listen(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+    let client = reqwest::Client::new();
     let response = reqwest::Client::new()
-        .get(events_url)
+        .get(&config.events_url())
         .header("Accept", "text/event-stream")
         .send()
         .await?
@@ -23,14 +22,22 @@ pub async fn listen(events_url: &str) -> Result<(), Box<dyn std::error::Error>> 
 
     while let Some(event) = stream.next().await {
         let event: SignalEvent = match serde_json::from_str(&event?.data) {
-            Ok(parsed) => parsed,
+            Ok(event) => event,
             Err(error) => {
                 eprintln!("Failed to deserialize Signal event: {error}");
                 continue;
             }
         };
-        process_event(event);
-        // let parsed_string = from_str(&event.data);
+        if let Some(message) = process_event(event, config) {
+            match dispatch(&client, config.gateway, &message).await {
+                Ok((response)) => {
+                    println!("Message {} dispatched successfully, response {}", message.id, response.expect("REASON").status());
+                }
+                Err(error) => {
+                    eprintln!("Dispatch failed: {error}");
+                }
+            }
+        }
     }
 
     Ok(())

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(try_from = "String", into = "String")]
 pub struct PhoneNumber(String);
 
@@ -31,6 +31,8 @@ pub struct Config {
     pub signal_cli: SocketAddr,
     pub gateway: SocketAddr,
     pub allowed_phones: Vec<PhoneNumber>,
+    pub allowed_accounts: Vec<PhoneNumber>,
+    pub allowed_source_names: Vec<String>,
 }
 
 impl Config {

@@ -1,5 +1,8 @@
 mod config;
+mod dispatcher;
+mod error;
 mod message;
+mod processor;
 mod signal;
 
 use config::Config;
@@ -11,6 +14,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let text = fs::read_to_string("config.toml")?;
     let config: Config = toml::from_str(&text)?;
     println!("{config:#?}");
-    listen(&config.events_url()).await?;
+    listen(&config).await?;
     Ok(())
 }
